@@ -2,6 +2,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 from backend.database.config import engine, Base
 from backend.routes import analyze, chat, history
@@ -25,8 +26,25 @@ app.include_router(analyze.router, prefix="/api", tags=["analyze"])
 app.include_router(chat.router, prefix="/api", tags=["chat"])
 app.include_router(history.router, prefix="/api", tags=["history"])
 
-# Mount static frontend
 frontend_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
+
+@app.get("/dashboard")
+async def serve_dashboard():
+    return FileResponse(os.path.join(frontend_path, "dashboard.html"))
+
+@app.get("/login")
+async def serve_login():
+    return FileResponse(os.path.join(frontend_path, "login.html"))
+
+@app.get("/signup")
+async def serve_signup():
+    return FileResponse(os.path.join(frontend_path, "signup.html"))
+
+@app.get("/history")
+async def serve_history_page():
+    return FileResponse(os.path.join(frontend_path, "history.html"))
+
+# Mount static frontend
 if os.path.exists(frontend_path):
     app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
 else:
