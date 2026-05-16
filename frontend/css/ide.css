@@ -1,0 +1,115 @@
+/* IDE Specific Styles */
+
+:root {
+    --bg-darker: #050505;
+    --bg-dark: #0a0a0a;
+    --bg-panel: #0d0d0d;
+    --border-dim: rgba(255, 255, 255, 0.05);
+    --accent: #3b82f6;
+    --accent-glow: rgba(59, 130, 246, 0.4);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Activity Bar Buttons */
+.activity-btn {
+    @apply w-10 h-10 flex items-center justify-center rounded-lg transition-all duration-300 relative text-gray-500 hover:text-white hover:bg-white/5;
+}
+.activity-btn.active {
+    @apply text-blue-500 bg-blue-500/10;
+}
+.activity-btn.active::before {
+    content: '';
+    position: absolute;
+    left: -12px;
+    top: 25%;
+    height: 50%;
+    width: 2px;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* File Tree Styles */
+.file-item {
+    @apply flex items-center gap-2 px-3 py-1.5 rounded-md cursor-pointer text-[13px] text-gray-400 hover:bg-white/5 hover:text-white transition-all group;
+}
+.file-item.active {
+    @apply bg-blue-500/10 text-blue-400 border-l-2 border-blue-500 rounded-none;
+}
+.folder-item {
+    @apply flex items-center gap-2 px-2 py-1.5 cursor-pointer text-[13px] text-gray-300 font-semibold hover:text-white;
+}
+
+/* Terminal Styles */
+#terminalOutput {
+    scrollbar-width: thin;
+}
+.terminal-line {
+    @apply py-0.5;
+}
+.terminal-error { @apply text-red-400; }
+.terminal-success { @apply text-green-400; }
+.terminal-info { @apply text-blue-400; }
+.terminal-warn { @apply text-yellow-400; }
+
+/* Tab Animation */
+.tab {
+    transition: background 0.2s, color 0.2s;
+}
+.tab:not(.active) {
+    @apply text-gray-500 hover:bg-white/5 hover:text-gray-300;
+}
+
+/* Analysis Panel Animations */
+#analysisPanel {
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* Glassmorphism Classes */
+.glass {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.neon-border {
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.1);
+}
+
+/* Monaco Editor Overrides */
+.monaco-editor, .monaco-editor .margin, .monaco-editor-background {
+    background-color: transparent !important;
+}
+.monaco-editor .margin {
+    border-right: 1px solid rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Floating Effects */
+.floating {
+    animation: floating 3s ease-in-out infinite;
+}
+
+@keyframes floating {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+    100% { transform: translateY(0px); }
+}

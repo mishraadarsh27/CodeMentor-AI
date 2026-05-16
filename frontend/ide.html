@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IDE | CodeMentor AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/ide.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Monaco Editor -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.43.0/min/vs/loader.min.js"></script>
+</head>
+<body class="bg-[#050505] text-gray-200 font-['Outfit'] h-screen overflow-hidden">
+    
+    <!-- Top Navigation Bar -->
+    <nav class="h-12 border-b border-white/10 flex items-center justify-between px-4 bg-[#0a0a0a]/80 backdrop-blur-md z-50">
+        <div class="flex items-center gap-6">
+            <div class="flex items-center gap-2">
+                <div class="w-7 h-7 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">
+                    <i class="fas fa-brain text-white text-xs"></i>
+                </div>
+                <span class="font-bold tracking-tight text-white hidden md:block">CodeMentor <span class="text-blue-500">IDE</span></span>
+            </div>
+            
+            <div class="flex items-center gap-2 bg-white/5 rounded-md px-3 py-1 border border-white/5">
+                <i class="fas fa-folder-open text-gray-400 text-sm"></i>
+                <span id="currentProjectName" class="text-sm font-medium text-gray-300">My Project</span>
+                <i class="fas fa-chevron-down text-gray-500 text-[10px]"></i>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <div id="aiStatus" class="flex items-center gap-2 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">
+                <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.8)]"></div>
+                <span class="text-[11px] font-semibold text-blue-400 uppercase tracking-wider">AI Online</span>
+            </div>
+            
+            <div class="flex items-center gap-2">
+                <button id="runBtn" class="flex items-center gap-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 px-4 py-1 rounded-md border border-green-500/30 transition-all group">
+                    <i class="fas fa-play text-xs group-hover:scale-110"></i>
+                    <span class="text-xs font-bold uppercase tracking-widest">Run</span>
+                </button>
+                <button id="analyzeBtn" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1 rounded-md shadow-lg shadow-indigo-600/20 transition-all">
+                    <i class="fas fa-wand-magic-sparkles text-xs"></i>
+                    <span class="text-xs font-bold uppercase tracking-widest">Analyze</span>
+                </button>
+            </div>
+
+            <div class="h-6 w-px bg-white/10"></div>
+            
+            <div class="flex items-center gap-3">
+                <div class="flex flex-col items-end hidden lg:block">
+                    <span id="userName" class="text-xs font-bold text-white">Adarsh Mishra</span>
+                    <span id="userStreak" class="text-[10px] text-orange-400 font-bold flex items-center gap-1">
+                        <i class="fas fa-fire"></i> 12 Day Streak
+                    </span>
+                </div>
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-gray-700 to-gray-600 border border-white/20"></div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex h-[calc(100vh-48px)]">
+        <!-- Activity Bar (Far Left) -->
+        <aside class="w-12 border-r border-white/5 flex flex-col items-center py-4 gap-6 bg-[#080808]">
+            <button class="activity-btn active" data-tab="explorer" title="Explorer">
+                <i class="far fa-copy text-xl"></i>
+            </button>
+            <button class="activity-btn" data-tab="mentor" title="AI Mentor">
+                <i class="fas fa-robot text-xl"></i>
+            </button>
+            <button class="activity-btn" data-tab="history" title="History">
+                <i class="fas fa-clock-rotate-left text-xl"></i>
+            </button>
+            <button class="activity-btn" data-tab="analytics" title="Analytics">
+                <i class="fas fa-chart-line text-xl"></i>
+            </button>
+            <div class="mt-auto flex flex-col items-center gap-6 pb-4">
+                <button class="activity-btn" data-tab="settings" title="Settings">
+                    <i class="fas fa-gear text-xl"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Side Bar (File Explorer / AI Chat) -->
+        <aside id="sidebar" class="w-64 border-r border-white/5 bg-[#0a0a0a] flex flex-col overflow-hidden transition-all duration-300">
+            <!-- Explorer View -->
+            <div id="explorerView" class="flex flex-col h-full">
+                <div class="p-3 flex items-center justify-between border-b border-white/5">
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-gray-500">Explorer</span>
+                    <div class="flex gap-2">
+                        <button id="newFileBtn" title="New File" class="hover:text-blue-400 transition-colors">
+                            <i class="fas fa-file-circle-plus text-xs"></i>
+                        </button>
+                        <button id="newFolderBtn" title="New Folder" class="hover:text-blue-400 transition-colors">
+                            <i class="fas fa-folder-plus text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="fileTree" class="flex-1 overflow-y-auto p-2">
+                    <!-- Dynamic File Tree -->
+                    <div class="text-[11px] text-gray-500 italic p-4 text-center">Loading project...</div>
+                </div>
+            </div>
+
+            <!-- AI Mentor View (Hidden by default) -->
+            <div id="mentorView" class="flex flex-col h-full hidden">
+                <div class="p-3 border-b border-white/5">
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-gray-500">AI Mentor</span>
+                </div>
+                <div id="mentorChat" class="flex-1 overflow-y-auto p-3 space-y-4 text-sm">
+                    <!-- Chat messages -->
+                </div>
+                <div class="p-3 border-t border-white/5 bg-[#0d0d0d]">
+                    <div class="relative">
+                        <textarea id="mentorInput" rows="1" placeholder="Ask AI Mentor..." class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-xs focus:outline-none focus:border-blue-500/50 transition-all resize-none"></textarea>
+                        <button id="sendChatBtn" class="absolute right-3 bottom-3 text-blue-500 hover:text-blue-400">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main IDE Area -->
+        <main class="flex-1 flex flex-col bg-[#050505] overflow-hidden">
+            <!-- Tabs -->
+            <div id="editorTabs" class="h-9 border-b border-white/5 flex items-center bg-[#0a0a0a]">
+                <!-- Dynamic Tabs -->
+                <div class="tab active flex items-center gap-2 px-4 h-full border-r border-white/5 cursor-pointer relative group">
+                    <i class="fab fa-python text-blue-400 text-xs"></i>
+                    <span class="text-xs">main.py</span>
+                    <i class="fas fa-times text-[8px] opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                    <div class="absolute bottom-0 left-0 w-full h-[2px] bg-blue-500"></div>
+                </div>
+            </div>
+
+            <!-- Editor & Analysis Split -->
+            <div class="flex-1 flex overflow-hidden">
+                <!-- Editor -->
+                <div id="editorContainer" class="flex-1 relative border-r border-white/5">
+                    <!-- Monaco Editor Mounted Here -->
+                </div>
+
+                <!-- AI Analysis Panel (Right) -->
+                <div id="analysisPanel" class="w-80 bg-[#0a0a0a] border-l border-white/5 overflow-y-auto hidden">
+                    <div class="p-4 border-b border-white/5 flex items-center justify-between sticky top-0 bg-[#0a0a0a] z-10">
+                        <span class="text-xs font-bold uppercase tracking-widest">AI Analysis</span>
+                        <button onclick="toggleAnalysisPanel()" class="hover:text-red-400"><i class="fas fa-times text-xs"></i></button>
+                    </div>
+                    <div id="analysisContent" class="p-4 space-y-6">
+                        <!-- Analysis results -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Terminal / Console (Bottom) -->
+            <div id="terminalPanel" class="h-48 border-t border-white/5 flex flex-col bg-[#080808]">
+                <div class="h-8 border-b border-white/5 px-4 flex items-center justify-between">
+                    <div class="flex items-center gap-4 h-full">
+                        <button class="text-[10px] font-bold uppercase tracking-widest border-b-2 border-blue-500 h-full">Output</button>
+                        <button class="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-gray-300">Debugger</button>
+                        <button class="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-gray-300">Roadmap</button>
+                    </div>
+                    <div class="flex items-center gap-3 text-gray-500">
+                        <button onclick="clearTerminal()" title="Clear"><i class="fas fa-ban text-[10px]"></i></button>
+                        <button onclick="toggleTerminal()" title="Maximize"><i class="fas fa-chevron-up text-[10px]"></i></button>
+                    </div>
+                </div>
+                <div id="terminalOutput" class="flex-1 p-3 font-['FiraCode',monospace] text-xs overflow-y-auto whitespace-pre-wrap selection:bg-blue-500/30">
+                    <div class="text-gray-500">Welcome to CodeMentor IDE Terminal. Click 'RUN' to execute code.</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="newProjectModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center">
+        <div class="w-[400px] bg-[#0d0d0d] border border-white/10 rounded-2xl shadow-2xl p-6">
+            <h3 class="text-xl font-bold text-white mb-4">Create New Project</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-[10px] font-bold text-gray-500 uppercase block mb-1">Project Name</label>
+                    <input type="text" id="projectNameInput" placeholder="e.g., My Awesome App" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm focus:outline-none focus:border-blue-500 transition-all">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-gray-500 uppercase block mb-1">Description</label>
+                    <textarea id="projectDescInput" rows="3" placeholder="What are you building?" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm focus:outline-none focus:border-blue-500 transition-all resize-none"></textarea>
+                </div>
+                <div class="flex gap-3 pt-2">
+                    <button onclick="hideModal('newProjectModal')" class="flex-1 py-2 rounded-lg border border-white/10 hover:bg-white/5 transition-all text-sm font-bold">Cancel</button>
+                    <button id="confirmNewProject" class="flex-1 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/20 transition-all text-sm font-bold">Create Project</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/ide.js"></script>
+</body>
+</html>

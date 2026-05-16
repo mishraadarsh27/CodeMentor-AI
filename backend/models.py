@@ -11,9 +11,55 @@ class User(Base):
     username = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    # Analytics & Streaks
+    current_streak = Column(Integer, default=0)
+    max_streak = Column(Integer, default=0)
+    last_activity_date = Column(DateTime(timezone=True), nullable=True)
+    total_analyses = Column(Integer, default=0)
+    total_projects = Column(Integer, default=0)
 
     analyses = relationship("Analysis", back_populates="owner")
     chat_messages = relationship("ChatMessage", back_populates="owner")
+    projects = relationship("Project", back_populates="owner")
+
+class Project(Base):
+    __tablename__ = "projects"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(100), nullable=False)
+    description = Column(Text, nullable=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    owner = relationship("User", back_populates="projects")
+    files = relationship("File", back_populates="project", cascade="all, delete-orphan")
+
+class File(Base):
+    __tablename__ = "files"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255), nullable=False)
+    content = Column(Text, default="")
+    language = Column(String(50), default="python")
+    project_id = Column(Integer, ForeignKey("projects.id"))
+    parent_folder_id = Column(Integer, ForeignKey("folders.id"), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    project = relationship("Project", back_populates="files")
+    folder = relationship("Folder", back_populates="files")
+
+class Folder(Base):
+    __tablename__ = "folders"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255), nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"))
+    parent_id = Column(Integer, ForeignKey("folders.id"), nullable=True)
+
+    files = relationship("File", back_populates="folder")
 
 class Analysis(Base):
     __tablename__ = "analyses"

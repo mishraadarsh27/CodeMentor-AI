@@ -6,7 +6,7 @@ from fastapi.responses import FileResponse
 from dotenv import load_dotenv
 
 from .database import engine, Base
-from .routes import analyze, chat, history, auth_routes
+from .routes import analyze, chat, history, auth_routes, projects, execute
 
 load_dotenv()
 
@@ -40,6 +40,8 @@ app.include_router(auth_routes.router, prefix="/api")
 app.include_router(analyze.router, prefix="/api", tags=["analyze"])
 app.include_router(chat.router, prefix="/api", tags=["chat"])
 app.include_router(history.router, prefix="/api", tags=["history"])
+app.include_router(projects.router, prefix="/api", tags=["projects"])
+app.include_router(execute.router, prefix="/api", tags=["execution"])
 
 # Path to static frontend files
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -61,6 +63,10 @@ async def serve_signup():
 @app.get("/history")
 async def serve_history_page():
     return FileResponse(os.path.join(frontend_path, "history.html"))
+
+@app.get("/ide")
+async def serve_ide():
+    return FileResponse(os.path.join(frontend_path, "ide.html"))
 
 # Mount static frontend last so it doesn't shadow API routes
 if os.path.exists(frontend_path):
