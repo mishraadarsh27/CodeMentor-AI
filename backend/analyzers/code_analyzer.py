@@ -17,24 +17,31 @@ class CodeAnalyzer:
 
     @staticmethod
     def check_linting(code: str) -> list:
-        # Write code to a temp file
-        temp_file = "temp_code.py"
-        with open(temp_file, "w", encoding="utf-8") as f:
-            f.write(code)
-        
-        pylint_output = io.StringIO()
-        reporter = TextReporter(pylint_output)
-        try:
-            # disable some overly strict rules for beginners
-            Run([temp_file, "--disable=C0114,C0116,C0103", "--output-format=text"], reporter=reporter, exit=False)
-        except Exception:
-            pass
-        
-        output = pylint_output.getvalue()
-        
         import os
-        if os.path.exists(temp_file):
-            os.remove(temp_file)
+        import tempfile
+        
+        # Create a unique temporary file
+        fd, path = tempfile.mkstemp(suffix=".py")
+        try:
+            with os.fdopen(fd, 'w', encoding="utf-8") as tmp:
+                tmp.write(code)
+            
+            pylint_output = io.StringIO()
+            reporter = TextReporter(pylint_output)
+            try:
+                # disable some overly strict rules for beginners
+                Run([path, "--disable=C0114,C0116,C0103", "--output-format=text"], reporter=reporter, exit=False)
+            except Exception:
+                pass
+            
+            output = pylint_output.getvalue()
+        finally:
+            # Ensure the file is removed even if pylint fails
+            try:
+                if os.path.exists(path):
+                    os.remove(path)
+            except Exception:
+                pass
             
         issues = []
         for line in output.split('\n'):
