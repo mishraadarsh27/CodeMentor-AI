@@ -215,3 +215,73 @@ code, pre, .font-mono {
 .delay-200 { animation-delay: 200ms; }
 .delay-300 { animation-delay: 300ms; }
 .delay-400 { animation-delay: 400ms; }
+/* Skeleton Loading Effects */
+.skeleton {
+    background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.skeleton-text {
+    height: 12px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+}
+
+.skeleton-circle {
+    border-radius: 50%;
+}
+
+/* Status Indicator Pulse */
+.pulse-glow-online {
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.8);
+}
+.pulse-glow-processing {
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
+}
+.pulse-glow-error {
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
+}
+.pulse-glow-retry {
+    box-shadow: 0 0 10px rgba(234, 179, 8, 0.8);
+}
+
+/* Toast Notifications (Simple) */
+.toast-container {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 1000;
+    display: flex;
+    flex-col: column;
+    gap: 0.5rem;
+}
+
+.toast {
+    padding: 1rem 1.5rem;
+    background: rgba(17, 24, 39, 0.9);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.75rem;
+    color: white;
+    font-size: 0.875rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    animation: toast-slide-in 0.3s ease-out forwards;
+}
+
+@keyframes toast-slide-in {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.toast-error { border-left: 4px solid #ef4444; }
+.toast-success { border-left: 4px solid #22c55e; }
+.toast-info { border-left: 4px solid #3b82f6; }
