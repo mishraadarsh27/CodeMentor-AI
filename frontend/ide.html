@@ -30,6 +30,21 @@
                 <span id="currentProjectName" class="text-sm font-medium text-gray-300">My Project</span>
                 <i class="fas fa-chevron-down text-gray-500 text-[10px]"></i>
             </div>
+
+            <div class="h-6 w-px bg-white/10 mx-2"></div>
+
+            <div class="flex items-center gap-2">
+                <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Language:</span>
+                <select id="languageSelect" class="bg-transparent text-xs font-bold text-gray-200 focus:outline-none cursor-pointer hover:text-blue-400 transition-colors">
+                    <option value="python" class="bg-[#0a0a0a]">Python</option>
+                    <option value="javascript" class="bg-[#0a0a0a]">JavaScript</option>
+                    <option value="cpp" class="bg-[#0a0a0a]">C++</option>
+                    <option value="java" class="bg-[#0a0a0a]">Java</option>
+                    <option value="go" class="bg-[#0a0a0a]">Go</option>
+                    <option value="c" class="bg-[#0a0a0a]">C</option>
+                    <option value="html" class="bg-[#0a0a0a]">HTML/CSS</option>
+                </select>
+            </div>
         </div>
 
         <div class="flex items-center gap-4">
@@ -38,6 +53,17 @@
                 <span class="text-[11px] font-semibold text-blue-400 uppercase tracking-wider">AI Online</span>
             </div>
             
+            <div class="flex items-center gap-2 mr-4">
+                <button id="openLocalBtn" class="flex items-center gap-2 bg-white/5 hover:bg-white/10 text-gray-300 px-3 py-1 rounded-md border border-white/10 transition-all text-[10px] font-bold uppercase tracking-widest" title="Open from computer">
+                    <i class="fas fa-file-import"></i>
+                    <span>Open Local</span>
+                </button>
+                <button id="saveLocalBtn" class="flex items-center gap-2 bg-white/5 hover:bg-white/10 text-gray-300 px-3 py-1 rounded-md border border-white/10 transition-all text-[10px] font-bold uppercase tracking-widest" title="Save to computer">
+                    <i class="fas fa-file-export"></i>
+                    <span>Save Local</span>
+                </button>
+            </div>
+
             <div class="flex items-center gap-2">
                 <button id="runBtn" class="flex items-center gap-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 px-4 py-1 rounded-md border border-green-500/30 transition-all group">
                     <i class="fas fa-play text-xs group-hover:scale-110"></i>
@@ -162,15 +188,13 @@
                 <div class="h-8 border-b border-white/5 px-4 flex items-center justify-between">
                     <div class="flex items-center gap-4 h-full">
                         <button class="text-[10px] font-bold uppercase tracking-widest border-b-2 border-blue-500 h-full">Output</button>
-                        <button class="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-gray-300">Debugger</button>
-                        <button class="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-gray-300">Roadmap</button>
                     </div>
                     <div class="flex items-center gap-3 text-gray-500">
                         <button onclick="clearTerminal()" title="Clear"><i class="fas fa-ban text-[10px]"></i></button>
                         <button onclick="toggleTerminal()" title="Maximize"><i class="fas fa-chevron-up text-[10px]"></i></button>
                     </div>
                 </div>
-                <div id="terminalOutput" class="flex-1 p-3 font-['FiraCode',monospace] text-xs overflow-y-auto whitespace-pre-wrap selection:bg-blue-500/30">
+                <div id="terminalOutput" class="flex-1 p-3 font-['FiraCode',monospace] text-xs overflow-y-auto whitespace-pre-wrap selection:bg-blue-500/30 outline-none" tabindex="0">
                     <div class="text-gray-500">Welcome to CodeMentor IDE Terminal. Click 'RUN' to execute code.</div>
                 </div>
             </div>
@@ -191,15 +215,48 @@
                     <textarea id="projectDescInput" rows="3" placeholder="What are you building?" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm focus:outline-none focus:border-blue-500 transition-all resize-none"></textarea>
                 </div>
                 <div class="flex gap-3 pt-2">
-                    <button onclick="hideModal('newProjectModal')" class="flex-1 py-2 rounded-lg border border-white/10 hover:bg-white/5 transition-all text-sm font-bold">Cancel</button>
+                    <button onclick="hideModal('newProjectModal')" class="flex-1 py-2 rounded-lg border border-white/10 hover:bg-white/5 transition-all text-sm font-bold text-gray-400">Cancel</button>
                     <button id="confirmNewProject" class="flex-1 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/20 transition-all text-sm font-bold">Create Project</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <div id="newFileModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center">
+        <div class="w-[400px] bg-[#0d0d0d] border border-white/10 rounded-2xl shadow-2xl p-6">
+            <h3 class="text-xl font-bold text-white mb-4">Create New File</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-[10px] font-bold text-gray-500 uppercase block mb-1">File Name</label>
+                    <input type="text" id="fileNameInput" placeholder="e.g., app.py" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm focus:outline-none focus:border-blue-500 transition-all">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-gray-500 uppercase block mb-1">Language</label>
+                    <select id="fileLanguageInput" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm focus:outline-none focus:border-blue-500 transition-all">
+                        <option value="python" class="bg-[#0d0d0d]">Python</option>
+                        <option value="javascript" class="bg-[#0d0d0d]">JavaScript</option>
+                        <option value="cpp" class="bg-[#0d0d0d]">C++</option>
+                        <option value="java" class="bg-[#0d0d0d]">Java</option>
+                        <option value="go" class="bg-[#0d0d0d]">Go</option>
+                        <option value="c" class="bg-[#0d0d0d]">C</option>
+                        <option value="html" class="bg-[#0d0d0d]">HTML/CSS</option>
+                    </select>
+                </div>
+                <div class="flex gap-3 pt-2">
+                    <button onclick="hideModal('newFileModal')" class="flex-1 py-2 rounded-lg border border-white/10 hover:bg-white/5 transition-all text-sm font-bold text-gray-400">Cancel</button>
+                    <button id="confirmNewFile" class="flex-1 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/20 transition-all text-sm font-bold">Create File</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="fixed bottom-6 right-6 z-[200] flex flex-col gap-3"></div>
+
     <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="/js/api.js?v=2"></script>
-    <script src="/js/ide.js"></script>
+    <script src="/js/ide.js?v=2"></script>
+    <script src="/js/chat.js"></script>
 </body>
 </html>

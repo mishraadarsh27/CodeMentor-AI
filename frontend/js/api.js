@@ -43,11 +43,11 @@ const api = {
 
     // --- Projects & Files ---
     async getProjects() {
-        return this.request('/projects/', 'GET');
+        return this.request('/projects', 'GET');
     },
 
     async createProject(name, description = "") {
-        return this.request('/projects/', 'POST', { name, description });
+        return this.request('/projects', 'POST', { name, description });
     },
 
     async getProject(id) {
@@ -93,8 +93,13 @@ const api = {
                 }
             }
             if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.detail || `HTTP error! status: ${response.status}`);
+                let errorData;
+                try {
+                    errorData = await response.json();
+                } catch (e) {
+                    errorData = { detail: `Status ${response.status}: ${response.statusText}` };
+                }
+                throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
             }
             return await response.json();
         } catch (e) {

@@ -33,8 +33,8 @@ class HistoryResponse(BaseModel):
     id: int
     code_content: str
     language: str
-    score: Optional[float]
-    created_at: datetime
+    score: Optional[float] = None
+    created_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True
@@ -53,7 +53,7 @@ class FileResponse(FileBase):
     id: int
     project_id: int
     created_at: datetime
-    updated_at: datetime
+    updated_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True
@@ -69,7 +69,7 @@ class ProjectResponse(ProjectBase):
     id: int
     user_id: int
     created_at: datetime
-    updated_at: Optional[datetime]
+    updated_at: Optional[datetime] = None
     files: List[FileResponse] = []
 
     class Config:
@@ -86,7 +86,7 @@ class ExecutionResponse(BaseModel):
     stderr: str
     output: str
     exit_code: int
-    signal: Optional[str]
+    signal: Optional[str] = None
     language: str
     version: str
 
