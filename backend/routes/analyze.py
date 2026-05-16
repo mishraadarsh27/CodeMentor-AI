@@ -5,8 +5,8 @@ import json
 from backend.schemas.schemas import CodeAnalyzeRequest, CodeAnalysisResult
 from backend.analyzers.code_analyzer import CodeAnalyzer
 from backend.ai_engine.groq_client import groq_client
-from backend.database.config import get_db
-from backend.models.models import CodeHistory
+from ..database import get_db
+from ..models import Analysis
 
 router = APIRouter()
 
@@ -33,7 +33,7 @@ def analyze_code(request: CodeAnalyzeRequest, db: Session = Depends(get_db)):
     )
 
     # Save to history
-    db_history = CodeHistory(
+    db_history = Analysis(
         code_content=request.code,
         language=request.language,
         analysis_result=json.dumps(result.dict()),

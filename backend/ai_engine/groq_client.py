@@ -14,16 +14,19 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
 
 class GroqClient:
     def __init__(self):
-        self.client = Groq(api_key=GROQ_API_KEY) if GROQ_API_KEY else None
-        # Updated to new supported model
-        self.model = "llama-3.3-70b-versatile"
+        self.client = None
+        if GROQ_API_KEY:
+            self.client = Groq(api_key=GROQ_API_KEY)
+        self.model = GROQ_MODEL
 
     def analyze_code(self, code: str, syntax_errors: list, linting_issues: list) -> dict:
         if not self.client:
-            return FallbackHandler.get_analysis_fallback(code, "API Key missing.")
+            logger.error("Groq API Key is missing.")
+            return FallbackHandler.get_analysis_fallback(code, "AI configuration missing (API Key).")
 
         prompt = PromptBuilder.build_analysis_prompt(code, syntax_errors, linting_issues)
         
@@ -35,7 +38,7 @@ class GroqClient:
                         {"role": "user", "content": prompt}
                     ],
                     model=self.model,
-                    temperature=0.1, # Lower temperature for more stable JSON
+                    temperature=0.1,
                     response_format={"type": "json_object"}
                 )
 
@@ -44,18 +47,25 @@ class GroqClient:
             
             parsed_data = ResponseParser.parse_analysis_response(raw_content)
             if not parsed_data:
-                return FallbackHandler.get_analysis_fallback(code, "Failed to parse AI response.")
+                return FallbackHandler.get_analysis_fallback(code, "AI returned an unparseable response.")
             
             return parsed_data
 
         except Exception as e:
-            friendly_msg = ErrorMapper.map_to_user_friendly(e)
+            error_str = str(e).lower()
             logger.error(f"AI Analysis Error: {str(e)}")
+            
+            # Specific handling for auth errors
+            if "401" in error_str or "unauthorized" in error_str or "invalid api key" in error_str:
+                friendly_msg = "Invalid AI API Key. Please update your environment variables."
+            else:
+                friendly_msg = ErrorMapper.map_to_user_friendly(e)
+                
             return FallbackHandler.get_analysis_fallback(code, friendly_msg)
 
     def chat(self, message: str, context_code: str = None) -> str:
         if not self.client:
-            return FallbackHandler.get_chat_fallback("API Key missing.")
+            return FallbackHandler.get_chat_fallback("AI configuration missing (API Key).")
 
         prompt = PromptBuilder.build_chat_prompt(message, context_code)
         
@@ -74,8 +84,14 @@ class GroqClient:
             return response.choices[0].message.content
 
         except Exception as e:
-            friendly_msg = ErrorMapper.map_to_user_friendly(e)
+            error_str = str(e).lower()
             logger.error(f"AI Chat Error: {str(e)}")
+            
+            if "401" in error_str or "unauthorized" in error_str or "invalid api key" in error_str:
+                friendly_msg = "Invalid AI API Key configuration."
+            else:
+                friendly_msg = ErrorMapper.map_to_user_friendly(e)
+                
             return FallbackHandler.get_chat_fallback(friendly_msg)
 
 groq_client = GroqClient()
