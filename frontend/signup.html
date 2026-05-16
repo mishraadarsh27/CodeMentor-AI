@@ -8,25 +8,24 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Outfit', sans-serif; background-color: #050505; }
+        body { font-family: 'Outfit', sans-serif; background-color: #050505; color: white; }
         .mesh-gradient {
-            background: radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0, transparent 50%),
-                        radial-gradient(at 100% 100%, rgba(79, 70, 229, 0.15) 0, transparent 50%);
+            background: radial-gradient(at 0% 0%, #0a0a1a 0, #050505 50%),
+                        radial-gradient(at 100% 100%, #1a0a0a 0, #050505 50%);
         }
         .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            background: #0f0f0f;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9);
         }
         .neon-button {
-            background: linear-gradient(135deg, #3b82f6 0%, #4f46e5 100%);
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+            box-shadow: 0 0 15px rgba(37, 99, 235, 0.4);
+            transition: all 0.3s ease;
         }
         .neon-button:hover {
-            box-shadow: 0 0 35px rgba(59, 130, 246, 0.6);
-            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(37, 99, 235, 0.6);
+            transform: translateY(-1px);
         }
     </style>
 </head>
@@ -40,22 +39,22 @@
 
         <form id="signupForm" class="space-y-4">
             <div>
-                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2 px-1">Full Name</label>
+                <label class="text-[11px] font-bold text-gray-300 uppercase tracking-widest block mb-2 px-1">Full Name</label>
                 <input type="text" id="fullname" required class="w-full bg-white/5 border border-white/10 rounded-2xl py-3.5 px-5 text-white focus:outline-none focus:border-blue-500/50 focus:bg-white/10 transition-all" placeholder="John Doe">
             </div>
 
             <div>
-                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2 px-1">Username</label>
+                <label class="text-[11px] font-bold text-gray-300 uppercase tracking-widest block mb-2 px-1">Username</label>
                 <input type="text" id="username" required class="w-full bg-white/5 border border-white/10 rounded-2xl py-3.5 px-5 text-white focus:outline-none focus:border-blue-500/50 focus:bg-white/10 transition-all" placeholder="johndoe">
             </div>
 
             <div>
-                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2 px-1">Email Address</label>
+                <label class="text-[11px] font-bold text-gray-300 uppercase tracking-widest block mb-2 px-1">Email Address</label>
                 <input type="email" id="email" required class="w-full bg-white/5 border border-white/10 rounded-2xl py-3.5 px-5 text-white focus:outline-none focus:border-blue-500/50 focus:bg-white/10 transition-all" placeholder="john@example.com">
             </div>
 
             <div>
-                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2 px-1">Password</label>
+                <label class="text-[11px] font-bold text-gray-300 uppercase tracking-widest block mb-2 px-1">Password</label>
                 <input type="password" id="password" required class="w-full bg-white/5 border border-white/10 rounded-2xl py-3.5 px-5 text-white focus:outline-none focus:border-blue-500/50 focus:bg-white/10 transition-all" placeholder="••••••••">
             </div>
 
@@ -71,23 +70,26 @@
         </p>
     </div>
 
-    <script src="js/api.js"></script>
+    <script src="/js/api.js?v=2"></script>
     <script>
         document.getElementById('signupForm').onsubmit = async (e) => {
             e.preventDefault();
+            console.log("Signup submitted");
             const u = document.getElementById('username').value;
             const e_ = document.getElementById('email').value;
             const p = document.getElementById('password').value;
             
             try {
                 const res = await api.signup(u, e_, p);
+                console.log("Signup response:", res);
                 if (res.access_token) {
                     window.location.href = '/ide';
                 } else {
                     alert(res.detail || "Signup failed");
                 }
             } catch (err) {
-                alert("An error occurred during signup");
+                console.error("Signup error:", err);
+                alert("An error occurred during signup: " + err.message);
             }
         };
     </script>

@@ -75,17 +75,21 @@ function showSidebarView(view) {
 
 // --- Project & File Management ---
 async function loadProject() {
+    console.log("Loading projects...");
     try {
         const projects = await api.getProjects();
+        console.log("Projects loaded:", projects);
         if (projects.length > 0) {
             currentProject = projects[0];
             renderFileTree(currentProject.files);
             document.getElementById('currentProjectName').innerText = currentProject.name;
         } else {
+            console.log("No projects found, showing creation modal");
             showModal('newProjectModal');
         }
     } catch (e) {
-        showToast('Error loading projects', 'error');
+        console.error("Error loading projects:", e);
+        showToast('Error loading projects: ' + e.message, 'error');
     }
 }
 
@@ -154,14 +158,17 @@ async function analyzeCode() {
     const code = editor.getValue();
     const language = activeFile ? activeFile.language : 'python';
     
+    console.log("Analyzing code for language:", language);
     document.getElementById('analysisPanel').classList.remove('hidden');
     document.getElementById('analysisContent').innerHTML = '<div class="flex flex-col items-center py-20 text-blue-500 animate-pulse"><i class="fas fa-brain text-4xl mb-4"></i><span class="text-xs uppercase tracking-widest font-bold">AI Analyzing...</span></div>';
     
     try {
         const result = await api.analyzeCode(code, language);
+        console.log("Analysis result:", result);
         renderAnalysis(result);
     } catch (e) {
-        showToast('Analysis failed', 'error');
+        console.error("Analysis failed:", e);
+        showToast('Analysis failed: ' + e.message, 'error');
     }
 }
 
