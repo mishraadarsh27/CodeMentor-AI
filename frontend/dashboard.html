@@ -29,9 +29,9 @@
         </div>
         
         <div class="flex items-center gap-3">
-            <div class="flex items-center gap-2 mr-4">
-                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse-glow"></span>
-                <span class="text-xs text-gray-400 font-medium">Llama-3 Ready</span>
+            <div id="aiStatusContainer" class="flex items-center gap-2 mr-4 bg-white/5 px-3 py-1 rounded-full border border-white/10">
+                <span id="aiStatusDot" class="w-2 h-2 rounded-full bg-green-500 animate-pulse-glow pulse-glow-online"></span>
+                <span id="aiStatusText" class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">AI Online</span>
             </div>
             <button id="themeToggle" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-colors">
                 <i class="fa-solid fa-sun text-sm" id="themeIcon"></i>
@@ -84,14 +84,19 @@
             <div id="editorContainer" class="flex-1 w-full bg-[#1e1e1e]"></div>
             
             <!-- Floating Loader Overlay -->
-            <div id="editorLoader" class="absolute inset-0 z-10 bg-[#0B0F19]/80 backdrop-blur-md flex flex-col items-center justify-center hidden">
-                <div class="relative w-20 h-20">
-                    <div class="absolute inset-0 border-2 border-blue-500/20 rounded-full"></div>
-                    <div class="absolute inset-0 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                    <div class="absolute inset-0 border-2 border-purple-500 border-b-transparent rounded-full animate-spin" style="animation-duration: 1.5s; animation-direction: reverse;"></div>
-                    <i class="fa-solid fa-brain absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-cyan-400 animate-pulse"></i>
+            <div id="editorLoader" class="absolute inset-0 z-10 bg-[#0B0F19]/90 backdrop-blur-xl flex flex-col items-center justify-center hidden">
+                <div class="relative w-24 h-24 mb-6">
+                    <div class="absolute inset-0 border-4 border-blue-500/10 rounded-full"></div>
+                    <div class="absolute inset-0 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                    <div class="absolute inset-0 border-4 border-purple-500 border-b-transparent rounded-full animate-spin" style="animation-duration: 2s; animation-direction: reverse;"></div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <i class="fa-solid fa-brain text-3xl text-blue-400 animate-pulse"></i>
+                    </div>
                 </div>
-                <p class="mt-4 text-sm font-mono text-cyan-400 tracking-wider">AI IS THINKING...</p>
+                <div class="text-center max-w-xs px-6">
+                    <p id="loaderStatus" class="text-sm font-mono text-blue-400 tracking-[0.2em] uppercase mb-2">Architecting Analysis...</p>
+                    <p id="loaderTip" class="text-xs text-gray-500 italic animate-pulse">"Did you know? Consistent naming improves code readability by 40%."</p>
+                </div>
             </div>
         </div>
 
@@ -107,6 +112,21 @@
             <!-- Analysis Panel -->
             <div id="analysisPanel" class="flex-1 overflow-y-auto p-4 custom-scrollbar">
                 
+                <!-- Skeleton State -->
+                <div id="analysisSkeleton" class="hidden flex-col gap-4">
+                    <div class="flex gap-4">
+                        <div class="glow-card flex-1 p-4 flex flex-col items-center justify-center">
+                            <div class="w-20 h-20 rounded-full skeleton skeleton-circle mb-2"></div>
+                        </div>
+                        <div class="flex-1 flex flex-col gap-2">
+                            <div class="glass-panel p-3 rounded-xl flex-1 skeleton"></div>
+                            <div class="glass-panel p-3 rounded-xl flex-1 skeleton"></div>
+                        </div>
+                    </div>
+                    <div class="glass-panel p-4 rounded-xl skeleton h-32"></div>
+                    <div class="skeleton h-12 rounded-xl"></div>
+                </div>
+
                 <!-- Empty State -->
                 <div id="analysisEmpty" class="h-full flex flex-col items-center justify-center text-center px-6 text-gray-500">
                     <div class="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-2xl mb-4 text-gray-400">
