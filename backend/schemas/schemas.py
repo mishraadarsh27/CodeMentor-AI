@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
+from datetime import datetime
 
 class CodeAnalyzeRequest(BaseModel):
     code: str
@@ -32,7 +33,7 @@ class HistoryResponse(BaseModel):
     code_content: str
     language: str
     score: Optional[float]
-    created_at: str
+    created_at: datetime
 
     class Config:
         from_attributes = True
