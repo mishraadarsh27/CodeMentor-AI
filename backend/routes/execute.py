@@ -160,39 +160,52 @@ async def websocket_execute(websocket: WebSocket):
             )
 
             async def read_output():
-                while True:
-                    chunk = await process.stdout.read(1)
-                    if not chunk:
-                        break
-                    await websocket.send_text(chunk.decode(errors='replace'))
+                try:
+                    while True:
+                        chunk = await process.stdout.read(1024)
+                        if not chunk:
+                            break
+                        await websocket.send_text(chunk.decode(errors='replace'))
+                except Exception:
+                    pass
 
-            output_task = asyncio.create_task(read_output())
-
-            try:
-                while process.returncode is None:
-                    try:
-                        user_input = await asyncio.wait_for(websocket.receive_text(), timeout=0.1)
-                        if user_input:
+            async def read_input():
+                try:
+                    while True:
+                        user_input = await websocket.receive_text()
+                        if user_input and process.returncode is None:
                             process.stdin.write(user_input.encode())
                             await process.stdin.drain()
-                    except asyncio.TimeoutError:
-                        pass
-                    except WebSocketDisconnect:
-                        break
-            except Exception:
-                pass
+                except Exception:
+                    pass
+
+            output_task = asyncio.create_task(read_output())
+            input_task = asyncio.create_task(read_input())
+
+            process_task = asyncio.create_task(process.wait())
+            
+            done, pending = await asyncio.wait(
+                [process_task, input_task],
+                return_when=asyncio.FIRST_COMPLETED
+            )
             
             if process.returncode is None:
                 process.terminate()
-            
+
             await output_task
-            await websocket.close()
+            input_task.cancel()
+            try:
+                await websocket.close()
+            except Exception:
+                pass
 
     except WebSocketDisconnect:
         pass
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         try:
-            await websocket.send_text(f"\\nError: {str(e)}")
+            await websocket.send_text(f"\\nError: {repr(e)}")
             await websocket.close()
         except:
             pass

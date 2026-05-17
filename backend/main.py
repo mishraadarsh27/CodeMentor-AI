@@ -1,9 +1,14 @@
 import os
+import sys
+import asyncio
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from dotenv import load_dotenv
+
+if sys.platform == 'win32':
+    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
 
 from .database import engine, Base
 from .routes import analyze, chat, history, auth_routes, projects, execute
