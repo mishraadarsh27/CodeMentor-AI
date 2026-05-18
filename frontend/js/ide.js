@@ -41,6 +41,17 @@ function initMonaco() {
                 // Future autosave logic
             }
         });
+
+        // Add Ctrl+S / Cmd+S save shortcut
+        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function() {
+            if (activeFile && activeFile.isLocal) {
+                saveLocalFile();
+            } else if (activeFile) {
+                showToast('Cloud file saved automatically', 'success');
+            } else {
+                showToast('No active file to save', 'info');
+            }
+        });
     });
 }
 
