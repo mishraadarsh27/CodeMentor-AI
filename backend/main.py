@@ -4,7 +4,9 @@ import asyncio
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi import Request
+import traceback
 from dotenv import load_dotenv
 
 if sys.platform == 'win32':
@@ -23,6 +25,15 @@ app = FastAPI(
     description="Production-grade AI Coding Mentor Platform",
     version="1.0.0"
 )
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    print(f"Unhandled Exception on {request.url.path}: {exc}")
+    traceback.print_exc()
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "An unexpected internal server error occurred. Please try again later."}
+    )
 
 # CORS configuration
 origins = os.getenv("ALLOWED_ORIGINS", "*").split(",")
