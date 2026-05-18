@@ -182,7 +182,15 @@ async def websocket_execute(websocket: WebSocket):
             output_task = asyncio.create_task(read_output())
             input_task = asyncio.create_task(read_input())
 
-            process_task = asyncio.create_task(process.wait())
+            async def wait_process():
+                try:
+                    await asyncio.wait_for(process.wait(), timeout=config.get("timeout", 10))
+                except asyncio.TimeoutError:
+                    if process.returncode is None:
+                        process.terminate()
+                    await websocket.send_text("\n\n[Execution Timeout: Process terminated]\n")
+
+            process_task = asyncio.create_task(wait_process())
             
             done, pending = await asyncio.wait(
                 [process_task, input_task],
