@@ -2,7 +2,7 @@
 
 A production-grade AI platform for developers. Built with FastAPI, Llama-3.3, and modern UI/UX principles.
 
-## ✨ Features
+##  Features
 - **Intelligent Analysis**: Real-time code auditing with Llama-3.3.
 - **Resilient AI Engine**: Modular architecture with automatic retries and fallback logic.
 - **Secure Auth**: JWT-based authentication with bcrypt password hashing.
