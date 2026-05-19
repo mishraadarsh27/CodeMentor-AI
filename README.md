@@ -9,13 +9,13 @@ A production-grade AI platform for developers. Built with FastAPI, Llama-3.3, an
 - **Premium UX**: Skeleton loaders, rotating technical tips, and real-time AI status.
 - **Docker Ready**: Production-ready containerization.
 
-## 🛠️ Tech Stack
+##  Tech Stack
 - **Backend**: FastAPI, SQLAlchemy, Pydantic, Groq SDK.
 - **Frontend**: Vanilla JS, TailwindCSS, Monaco Editor.
 - **Database**: SQLite (local) / PostgreSQL (production).
 - **Deployment**: Docker, Docker Compose, Render.
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### 1. Prerequisites
 - Python 3.11+
