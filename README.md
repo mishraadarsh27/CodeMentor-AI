@@ -1,4 +1,4 @@
-# CodeMentor AI 🚀
+# CodeMentor AI 
 
 A production-grade AI platform for developers. Built with FastAPI, Llama-3.3, and modern UI/UX principles.
 
