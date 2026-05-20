@@ -80,7 +80,7 @@ CodeMentorAI/
 └── requirements.txt    # Pinned Dependencies
 ```
 
-## 🔑 Environment Variables
+##  Environment Variables
 | Variable | Description | Default |
 | :--- | :--- | :--- |
 | `DATABASE_URL` | SQLAlchemy connection string | `sqlite:///./codementor.db` |
