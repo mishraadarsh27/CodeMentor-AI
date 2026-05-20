@@ -51,13 +51,13 @@ uvicorn backend.main:app --reload
 ```
 Visit [http://localhost:8000](http://localhost:8000)
 
-## 🐳 Docker Instructions
+##  Docker Instructions
 ```bash
 # Build and run with Docker Compose
 docker-compose up --build
 ```
 
-## 🧪 Testing
+##  Testing
 ```bash
 pytest
 ```
