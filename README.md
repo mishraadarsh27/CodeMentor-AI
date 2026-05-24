@@ -62,7 +62,7 @@ docker-compose up --build
 pytest
 ```
 
-## 📁 Project Structure
+##  Project Structure
 ```text
 CodeMentorAI/
 ├── backend/
