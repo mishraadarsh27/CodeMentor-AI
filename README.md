@@ -88,5 +88,5 @@ CodeMentorAI/
 | `SECRET_KEY` | Used for JWT signing | `prod-secret-key` |
 | `ALLOWED_ORIGINS`| CORS allowed domains | `*` |
 
-## 📄 License
+##  License
 MIT
