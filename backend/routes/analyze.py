@@ -6,12 +6,17 @@ from backend.schemas.schemas import CodeAnalyzeRequest, CodeAnalysisResult
 from backend.analyzers.code_analyzer import CodeAnalyzer
 from backend.ai_engine.groq_client import groq_client
 from ..database import get_db
-from ..models import Analysis
+from ..models import Analysis, User
+from ..auth import get_current_user
 
 router = APIRouter()
 
 @router.post("/analyze", response_model=CodeAnalysisResult)
-def analyze_code(request: CodeAnalyzeRequest, db: Session = Depends(get_db)):
+def analyze_code(
+    request: CodeAnalyzeRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
     # 1. Basic Analysis
     syntax_errors = CodeAnalyzer.check_syntax(request.code)
     linting_issues = []
@@ -37,9 +42,14 @@ def analyze_code(request: CodeAnalyzeRequest, db: Session = Depends(get_db)):
         code_content=request.code,
         language=request.language,
         analysis_result=json.dumps(result.dict()),
-        score=result.score
+        score=result.score,
+        user_id=current_user.id
     )
     db.add(db_history)
+    
+    # Update stats
+    current_user.total_analyses += 1
+    
     db.commit()
     
     return result
