@@ -3,7 +3,11 @@ const API_BASE_URL = '/api';
 const api = {
     // --- Auth ---
     async signup(username, email, password) {
-        return this.request('/auth/signup', 'POST', { username, email, password });
+        const data = await this.request('/auth/signup', 'POST', { username, email, password });
+        if (data && data.access_token) {
+            localStorage.setItem('token', data.access_token);
+        }
+        return data;
     },
 
     async login(username, password) {

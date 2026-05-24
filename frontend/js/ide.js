@@ -10,49 +10,105 @@ let fileHandle = null; // Track local file handle
 
 // Initialize IDE
 document.addEventListener('DOMContentLoaded', async () => {
-    initMonaco();
+    await initMonaco();
     initActivityBar();
     initEventListeners();
-    loadProject(); // Load default or saved project
+    await loadProject(); // Load default or saved project
 });
 
 // --- Monaco Editor Initialization ---
 function initMonaco() {
-    require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.43.0/min/vs' } });
-    require(['vs/editor/editor.main'], function () {
-        editor = monaco.editor.create(document.getElementById('editorContainer'), {
-            value: '# Welcome to CodeMentor AI IDE\n\ndef hello():\n    print("Hello, AI Mentor!")\n\nhello()',
-            language: 'python',
-            theme: 'vs-dark',
-            automaticLayout: true,
-            fontFamily: "'Fira Code', monospace",
-            fontSize: 13,
-            lineHeight: 20,
-            minimap: { enabled: false },
-            scrollbar: { vertical: 'hidden', horizontal: 'auto' },
-            padding: { top: 10 },
-            roundedSelection: true,
-            cursorSmoothCaretAnimation: "on",
-            smoothScrolling: true
-        });
+    return new Promise((resolve) => {
+        require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.43.0/min/vs' } });
+        require(['vs/editor/editor.main'], function () {
+            editor = monaco.editor.create(document.getElementById('editorContainer'), {
+                value: '# Welcome to CodeMentor AI IDE\n\ndef hello():\n    print("Hello, AI Mentor!")\n\nhello()',
+                language: 'python',
+                theme: 'vs-dark',
+                automaticLayout: true,
+                fontFamily: "'Fira Code', monospace",
+                fontSize: 13,
+                lineHeight: 20,
+                minimap: { enabled: false },
+                scrollbar: { vertical: 'hidden', horizontal: 'auto' },
+                padding: { top: 10 },
+                roundedSelection: true,
+                cursorSmoothCaretAnimation: "on",
+                smoothScrolling: true
+            });
 
-        editor.onDidChangeModelContent(() => {
-            if (activeFile) {
-                // Future autosave logic
-            }
-        });
+            editor.onDidChangeModelContent(() => {
+                if (activeFile) {
+                    handleContentChange();
+                }
+            });
 
-        // Add Ctrl+S / Cmd+S save shortcut
-        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function() {
-            if (activeFile && activeFile.isLocal) {
-                saveLocalFile();
-            } else if (activeFile) {
-                showToast('Cloud file saved automatically', 'success');
-            } else {
-                showToast('No active file to save', 'info');
-            }
+            // Add Ctrl+S / Cmd+S save shortcut
+            editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function() {
+                saveActiveFile();
+            });
+            
+            resolve();
         });
     });
+}
+
+let autosaveTimeout = null;
+
+function handleContentChange() {
+    if (!activeFile || activeFile.isLocal) return;
+    
+    if (autosaveTimeout) {
+        clearTimeout(autosaveTimeout);
+    }
+    
+    autosaveTimeout = setTimeout(async () => {
+        if (!activeFile || activeFile.isLocal) return;
+        const currentContent = editor.getValue();
+        if (currentContent === activeFile.content) return;
+        
+        try {
+            const updated = await api.updateFile(activeFile.id, activeFile.name, currentContent, activeFile.language);
+            activeFile.content = currentContent;
+            const idx = currentProject.files.findIndex(f => f.id === activeFile.id);
+            if (idx !== -1) {
+                currentProject.files[idx].content = currentContent;
+            }
+            showToast('Saved to cloud', 'success');
+        } catch (e) {
+            console.error("Autosave failed:", e);
+            showToast('Failed to auto-save to cloud', 'error');
+        }
+    }, 1500);
+}
+
+async function saveActiveFile() {
+    if (!activeFile) {
+        showToast('No active file to save', 'info');
+        return;
+    }
+    if (activeFile.isLocal) {
+        saveLocalFile();
+        return;
+    }
+    
+    if (autosaveTimeout) {
+        clearTimeout(autosaveTimeout);
+    }
+    
+    const currentContent = editor.getValue();
+    try {
+        await api.updateFile(activeFile.id, activeFile.name, currentContent, activeFile.language);
+        activeFile.content = currentContent;
+        const idx = currentProject.files.findIndex(f => f.id === activeFile.id);
+        if (idx !== -1) {
+            currentProject.files[idx].content = currentContent;
+        }
+        showToast('Saved to cloud successfully', 'success');
+    } catch (e) {
+        console.error("Save failed:", e);
+        showToast('Failed to save to cloud', 'error');
+    }
 }
 
 // --- Activity Bar Logic ---
