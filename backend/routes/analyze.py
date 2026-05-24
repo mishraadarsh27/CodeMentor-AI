@@ -49,6 +49,8 @@ def analyze_code(
     
     # Update stats
     current_user.total_analyses += 1
+    from ..utils.streak import update_streak
+    update_streak(current_user, db)
     
     db.commit()
     

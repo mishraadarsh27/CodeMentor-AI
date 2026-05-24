@@ -96,3 +96,16 @@ class UserStats(BaseModel):
     max_streak: int
     total_analyses: int
     total_projects: int
+
+class UserProfileResponse(BaseModel):
+    id: int
+    username: str
+    email: str
+    created_at: datetime
+    current_streak: int
+    max_streak: int
+    total_analyses: int
+    total_projects: int
+
+    class Config:
+        from_attributes = True

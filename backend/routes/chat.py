@@ -24,6 +24,10 @@ def chat_with_mentor(
         user_id=current_user.id
     )
     db.add(db_history)
+    
+    from ..utils.streak import update_streak
+    update_streak(current_user, db)
+    
     db.commit()
     
     return ChatResponse(response=ai_response)
