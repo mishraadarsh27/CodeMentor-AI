@@ -70,3 +70,13 @@ def update_file(file_id: int, file_update: FileCreate, db: Session = Depends(get
     db.commit()
     db.refresh(db_file)
     return db_file
+
+@router.delete("/files/{file_id}")
+def delete_file(file_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    db_file = db.query(File).join(Project).filter(File.id == file_id, Project.user_id == current_user.id).first()
+    if not db_file:
+        raise HTTPException(status_code=404, detail="File not found")
+    
+    db.delete(db_file)
+    db.commit()
+    return {"message": "File deleted successfully"}
