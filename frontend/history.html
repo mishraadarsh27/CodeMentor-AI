@@ -81,8 +81,7 @@
         document.addEventListener('DOMContentLoaded', async () => {
             const container = document.getElementById('historyContainer');
             try {
-                const res = await fetch('/api/history');
-                const history = await res.json();
+                const history = await api.request('/history');
                 
                 container.innerHTML = '';
                 
