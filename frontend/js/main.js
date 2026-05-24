@@ -289,3 +289,39 @@ if(applyCodeBtn) {
         closeModal();
     });
 }
+
+// Load and display user streak/profile info
+async function loadUserProfile() {
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const profile = await window.api.request('/auth/profile');
+        if (profile) {
+            const streakBadge = document.getElementById('userStreakBadge');
+            const streakCount = document.getElementById('streakCount');
+            const userBtn = document.getElementById('userBtn');
+
+            if (streakBadge && streakCount) {
+                streakCount.textContent = profile.current_streak;
+                streakBadge.classList.remove('hidden');
+                streakBadge.classList.add('flex');
+                streakBadge.title = `Max Streak: ${profile.max_streak} Days`;
+            }
+
+            if (userBtn) {
+                userBtn.title = `Logged in as ${profile.username} | Total Analyses: ${profile.total_analyses}`;
+                userBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (confirm(`Logged in as ${profile.username}.\nDo you want to log out?`)) {
+                        window.api.logout();
+                    }
+                });
+            }
+        }
+    } catch (e) {
+        console.error("Failed to load user profile:", e);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', loadUserProfile);

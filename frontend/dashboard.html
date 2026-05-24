@@ -33,10 +33,15 @@
                 <span id="aiStatusDot" class="w-2 h-2 rounded-full bg-green-500 animate-pulse-glow pulse-glow-online"></span>
                 <span id="aiStatusText" class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">AI Online</span>
             </div>
+            <!-- Coding Streak Badge -->
+            <div id="userStreakBadge" class="hidden items-center gap-1.5 bg-orange-500/10 text-orange-400 px-3 py-1 rounded-full border border-orange-500/20 text-xs font-bold font-heading">
+                <i class="fa-solid fa-fire animate-pulse text-sm text-orange-500"></i>
+                <span id="streakCount">0</span> Days
+            </div>
             <button id="themeToggle" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-colors">
                 <i class="fa-solid fa-sun text-sm" id="themeIcon"></i>
             </button>
-            <a href="/login" class="w-8 h-8 flex items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg">
+            <a href="/login" class="w-8 h-8 flex items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg" id="userBtn">
                 <i class="fa-solid fa-user text-xs"></i>
             </a>
         </div>
