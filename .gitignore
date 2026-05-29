@@ -32,3 +32,6 @@ codementor.db
 # Temp
 tmp/
 scratch/
+
+test.db
+test_analytics.db
