@@ -1,6 +1,5 @@
-// Chat functionality
-const chatMessages = document.getElementById('mentorChat');
-const chatInput = document.getElementById('mentorInput');
+const chatMessages = document.getElementById('chatMessages') || document.getElementById('mentorChat');
+const chatInput = document.getElementById('chatInput') || document.getElementById('mentorInput');
 const sendChatBtn = document.getElementById('sendChatBtn');
 
 function addMessage(content, isUser = false) {
